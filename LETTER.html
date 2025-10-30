@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exploding Box Letter</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background: radial-gradient(circle at center, #ffe1ec 0%, #ee9ca7 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Poppins', sans-serif;
+    overflow: hidden;
+  }
+
+  /* Slightly lower box */
+  .box {
+    position: relative;
+    width: 280px;
+    height: 190px;
+    background: #fcbad3;
+    border: 3px solid #f78fb3;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    transform-style: preserve-3d;
+    perspective: 800px;
+    transition: transform 0.4s ease, opacity 0.6s ease;
+    margin-top: 60px;
+  }
+
+  .lid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    background: #f78fb3;
+    border-bottom: 3px solid #f48fb1;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    transform-origin: top center;
+    transition: transform 0.6s ease;
+    z-index: 2;
+  }
+
+  .base {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    background: #fcbad3;
+    z-index: 1;
+  }
+
+  .piece {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: #fcbad3;
+    border: 2px solid #f78fb3;
+    border-radius: 8px;
+    opacity: 0;
+  }
+
+  /* Letter slightly higher now */
+  .letter {
+    position: absolute;
+    top: 48%; /* was 55%, now higher */
+    left: 50%;
+    width: 280px;
+    height: 180px;
+    background: #fffaf0;
+    border: 2px solid #f7c8d3;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+    transition: all 1s ease;
+    text-align: center;
+    padding: 25px;
+    z-index: 5;
+  }
+
+  .letter h3 {
+    color: #d94f70;
+    margin-top: 5px;
+    font-size: 20px;
+  }
+
+  .letter p {
+    color: #444;
+    font-size: 15px;
+  }
+
+  @keyframes explode {
+    0% { opacity: 1; transform: translate(0,0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--x), var(--y)) scale(2); }
+  }
+
+  .show-letter {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .explode-btn {
+    margin-top: 260px;
+    padding: 12px 24px;
+    border: none;
+    background: #ff7aa8;
+    color: white;
+    font-size: 17px;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 5px 12px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease;
+  }
+
+  .explode-btn:hover {
+    transform: scale(1.07);
+  }
+
+  .hint {
+    margin-top: 15px;
+    color: #fff;
+    font-size: 15px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+</style>
+</head>
+<body>
+
+<div class="box" id="giftBox">
+  <div class="lid"></div>
+  <div class="base"></div>
+</div>
+
+<div class="letter" id="letter">
+  <h3>HI PATTY</h3>
+  <p>GOOD AFTERNOON<br>just wanna say Hi :3</p>
+</div>
+
+<button class="explode-btn" id="explodeBtn">Explode Box 💥</button>
+<div class="hint">Click the button!</div>
+
+<script>
+  const box = document.getElementById('giftBox');
+  const letter = document.getElementById('letter');
+  const btn = document.getElementById('explodeBtn');
+
+  for (let i = 0; i < 10; i++) {
+    const piece = document.createElement('div');
+    piece.classList.add('piece');
+    piece.style.setProperty('--x', `${(Math.random() - 0.5) * 600}px`);
+    piece.style.setProperty('--y', `${(Math.random() - 0.5) * 600}px`);
+    document.body.appendChild(piece);
+  }
+
+  const pieces = document.querySelectorAll('.piece');
+
+  btn.addEventListener('click', () => {
+    pieces.forEach(piece => {
+      const { left, top, width, height } = box.getBoundingClientRect();
+      piece.style.left = `${left + Math.random() * width}px`;
+      piece.style.top = `${top + Math.random() * height}px`;
+      piece.style.opacity = 1;
+      piece.style.animation = `explode 1s forwards`;
+    });
+
+    box.style.opacity = '0';
+    box.style.transform = 'scale(0)';
+
+    setTimeout(() => {
+      letter.classList.add('show-letter');
+      btn.style.display = 'none';
+      document.querySelector('.hint').textContent = ' HALLO PAT!';
+    }, 800);
+  });
+</script>
+
+</body>
+</html>
